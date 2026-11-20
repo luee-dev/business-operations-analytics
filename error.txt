@@ -1,0 +1,79 @@
+
+
+# ============================================================
+# 7. MODEL 2: CATEGORICAL ORDER VALUE QUARTILES
+# ============================================================
+
+def fit_quartile_model(df: pd.DataFrame):
+    """
+    Model 2:
+        Discrepancy ~ Instalment group + Order-value quartile
+    """
+
+    formula = (
+        "discrepancy ~ "
+        "C(installment_group, "
+        "Treatment(reference='1 installment')) "
+        "+ C(order_value_quartile, Treatment(reference=1))"
+    )
+
+    model = smf.glm(
+        formula=formula,
+        data=df,
+        family=sm.families.Binomial(),
+    ).fit(cov_type="HC3")
+
+    print_model_results(
+        model,
+        "MODEL 2: CATEGORICAL ORDER-VALUE QUARTILES",
+    )
+
+    return model
+
+
+# ============================================================
+# 8. MAIN EXECUTION
+# ============================================================
+
+def main():
+
+    print("Loading data from PostgreSQL...")
+
+    df = load_data()
+
+    print("Preparing analytical dataset...")
+
+    df = prepare_data(df)
+
+    print_dataset_summary(df)
+
+    # First model.
+    model_1 = fit_continuous_model(df)
+
+    # Second model.
+    model_2 = fit_quartile_model(df)
+
+    print("\n" + "=" * 80)
+    print("MODEL COMPARISON")
+    print("=" * 80)
+
+    print(
+        "Model 1 uses continuous log-transformed order value."
+    )
+
+    print(
+        "Model 2 uses categorical order-value quartiles."
+    )
+
+    print(
+        "\nCompare the instalment coefficients, confidence "
+        "intervals and model diagnostics."
+    )
+
+    print(
+        "\nNeither model establishes a causal relationship."
+    )
+
+
+if __name__ == "__main__":
+    main()

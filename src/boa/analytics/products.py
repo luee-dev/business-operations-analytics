@@ -23,9 +23,7 @@ def analyze_category_performance(
     missing_columns = required_columns.difference(categories.columns)
 
     if missing_columns:
-        raise ValueError(
-            f"Missing required columns: {sorted(missing_columns)}"
-        )
+        raise ValueError(f"Missing required columns: {sorted(missing_columns)}")
 
     if categories["product_category"].duplicated().any():
         raise ValueError("Expected one row per product category.")
@@ -50,27 +48,21 @@ def analyze_category_performance(
     total_delivered_value = summary["delivered_product_value"].sum()
 
     summary["revenue_share"] = (
-        summary["delivered_product_value"]
-        / total_delivered_value
-        * 100
+        summary["delivered_product_value"] / total_delivered_value * 100
     )
 
-    summary["revenue_per_catalogue_product"] = (
-        summary["delivered_product_value"]
-        / summary["total_products"].replace(0, pd.NA)
-    )
+    summary["revenue_per_catalogue_product"] = summary[
+        "delivered_product_value"
+    ] / summary["total_products"].replace(0, pd.NA)
 
     summary["cancellation_rate"] = (
-        summary["canceled_orders"]
-        / summary["total_orders"].replace(0, pd.NA)
-        * 100
+        summary["canceled_orders"] / summary["total_orders"].replace(0, pd.NA) * 100
     )
 
     return summary.sort_values(
         "delivered_product_value",
         ascending=False,
     ).reset_index(drop=True)
-
 
 
 def analyze_category_concentration(
@@ -84,9 +76,7 @@ def analyze_category_concentration(
 
     total_products = analysis["total_products"].sum()
 
-    analysis["catalogue_share"] = (
-        analysis["total_products"] / total_products * 100
-    )
+    analysis["catalogue_share"] = analysis["total_products"] / total_products * 100
 
     analysis["productivity_index"] = (
         analysis["revenue_share"] / analysis["catalogue_share"]
@@ -101,12 +91,8 @@ def analyze_category_concentration(
         "top_10_revenue_share": analysis.head(10)["revenue_share"].sum(),
         "category_hhi": hhi,
         "top_categories": analysis.head(10),
-        "highest_productivity": analysis.nlargest(
-            10, "productivity_index"
-        ),
-        "lowest_productivity": analysis.nsmallest(
-            10, "productivity_index"
-        ),
+        "highest_productivity": analysis.nlargest(10, "productivity_index"),
+        "lowest_productivity": analysis.nsmallest(10, "productivity_index"),
     }
 
 
@@ -130,9 +116,7 @@ def analyze_product_performance(
     missing_columns = required_columns.difference(products.columns)
 
     if missing_columns:
-        raise ValueError(
-            f"Missing required columns: {sorted(missing_columns)}"
-        )
+        raise ValueError(f"Missing required columns: {sorted(missing_columns)}")
 
     if products["product_id"].duplicated().any():
         raise ValueError("Expected one row per product.")
@@ -150,9 +134,7 @@ def analyze_product_performance(
     if total_revenue <= 0:
         raise ValueError("Total delivered revenue must be positive.")
 
-    result["revenue_share"] = (
-        result["delivered_product_value"] / total_revenue * 100
-    )
+    result["revenue_share"] = result["delivered_product_value"] / total_revenue * 100
 
     result = result.sort_values(
         "delivered_product_value",
@@ -161,9 +143,7 @@ def analyze_product_performance(
 
     result["revenue_rank"] = range(1, len(result) + 1)
 
-    result["cumulative_revenue_share"] = (
-        result["revenue_share"].cumsum()
-    )
+    result["cumulative_revenue_share"] = result["revenue_share"].cumsum()
 
     return result
 
@@ -185,16 +165,12 @@ def summarize_product_concentration(
     missing_columns = required_columns.difference(products.columns)
 
     if missing_columns:
-        raise ValueError(
-            f"Missing required columns: {sorted(missing_columns)}"
-        )
+        raise ValueError(f"Missing required columns: {sorted(missing_columns)}")
 
     if products["product_id"].duplicated().any():
         raise ValueError("Expected one row per product.")
 
-    selling_products = products.loc[
-        products["delivered_product_value"] > 0
-    ].copy()
+    selling_products = products.loc[products["delivered_product_value"] > 0].copy()
 
     total_products = len(products)
     active_products = len(selling_products)
@@ -203,11 +179,7 @@ def summarize_product_concentration(
     if total_revenue <= 0:
         raise ValueError("Total delivered revenue must be positive.")
 
-    shares = (
-        selling_products["delivered_product_value"]
-        / total_revenue
-        * 100
-    )
+    shares = selling_products["delivered_product_value"] / total_revenue * 100
 
     ranked = selling_products.sort_values(
         "delivered_product_value",
@@ -219,28 +191,16 @@ def summarize_product_concentration(
     return {
         "total_products": total_products,
         "products_with_delivered_sales": active_products,
-        "products_without_delivered_sales": (
-            total_products - active_products
-        ),
-        "catalogue_sales_penetration": (
-            active_products / total_products * 100
-        ),
+        "products_without_delivered_sales": (total_products - active_products),
+        "catalogue_sales_penetration": (active_products / total_products * 100),
         "top_10_revenue_share": shares.nlargest(10).sum(),
         "top_20_revenue_share": shares.nlargest(20).sum(),
         "top_50_revenue_share": shares.nlargest(50).sum(),
-        "product_revenue_hhi": (shares ** 2).sum(),
-        "products_with_one_seller": (
-            seller_coverage == 1
-        ).sum(),
-        "products_with_multiple_sellers": (
-            seller_coverage > 1
-        ).sum(),
-        "average_sellers_per_selling_product": (
-            seller_coverage.mean()
-        ),
-        "total_delivered_item_lines": (
-            products["delivered_item_lines"].sum()
-        ),
+        "product_revenue_hhi": (shares**2).sum(),
+        "products_with_one_seller": (seller_coverage == 1).sum(),
+        "products_with_multiple_sellers": (seller_coverage > 1).sum(),
+        "average_sellers_per_selling_product": (seller_coverage.mean()),
+        "total_delivered_item_lines": (products["delivered_item_lines"].sum()),
         "total_delivered_product_value": total_revenue,
         "top_10_products": ranked.head(10)["product_id"].tolist(),
     }

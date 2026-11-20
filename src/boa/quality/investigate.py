@@ -1,4 +1,3 @@
-
 import pandas as pd
 
 from boa.config.datasets import DATASETS, RAW_DATA_DIR
@@ -28,9 +27,7 @@ def investigate_orders() -> None:
             .agg(["sum", "count"])
         )
 
-        result["missing_percentage"] = (
-            result["sum"] / result["count"] * 100
-        ).round(2)
+        result["missing_percentage"] = (result["sum"] / result["count"] * 100).round(2)
 
         print(result.to_string())
 
@@ -53,12 +50,7 @@ def investigate_products() -> None:
 
     print("\nMissing-value patterns:")
 
-    patterns = (
-        df[columns]
-        .isna()
-        .value_counts()
-        .reset_index(name="row_count")
-    )
+    patterns = df[columns].isna().value_counts().reset_index(name="row_count")
 
     print(patterns.to_string(index=False))
 
@@ -87,27 +79,18 @@ def investigate_geolocation() -> None:
     print(df["geolocation_zip_code_prefix"].nunique())
 
     print("\nUnique coordinate combinations:")
-    print(
-        df[
-            ["geolocation_lat", "geolocation_lng"]
-        ].drop_duplicates().shape[0]
-    )
+    print(df[["geolocation_lat", "geolocation_lng"]].drop_duplicates().shape[0])
 
     print("\nPostcodes with multiple coordinates:")
 
-    coordinates_per_zip = (
-        df.groupby("geolocation_zip_code_prefix")
-        .apply(
-            lambda group: group[
-                ["geolocation_lat", "geolocation_lng"]
-            ].drop_duplicates().shape[0],
-            include_groups=False,
-        )
+    coordinates_per_zip = df.groupby("geolocation_zip_code_prefix").apply(
+        lambda group: (
+            group[["geolocation_lat", "geolocation_lng"]].drop_duplicates().shape[0]
+        ),
+        include_groups=False,
     )
 
-    print(
-        (coordinates_per_zip > 1).sum()
-    )
+    print((coordinates_per_zip > 1).sum())
 
     print("\nCoordinate count distribution:")
     print(coordinates_per_zip.describe())

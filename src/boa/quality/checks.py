@@ -1,4 +1,3 @@
-
 import logging
 from pathlib import Path
 
@@ -6,7 +5,6 @@ import pandas as pd
 
 from boa.config.datasets import DATASETS
 from boa.quality.rules import DATASET_RULES
-
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 PROCESSED_DATA_DIR = PROJECT_ROOT / "data" / "processed"
@@ -75,9 +73,7 @@ def validate_dataset(dataset_name: str, filename: str) -> list[dict]:
     # --------------------------------------------------
 
     missing_columns = [
-        column
-        for column in rules.required_columns
-        if column not in df.columns
+        column for column in rules.required_columns if column not in df.columns
     ]
 
     results.append(
@@ -109,9 +105,7 @@ def validate_dataset(dataset_name: str, filename: str) -> list[dict]:
     # --------------------------------------------------
 
     for column in rules.unique_columns:
-        duplicate_count = int(
-            df.duplicated(subset=[column], keep=False).sum()
-        )
+        duplicate_count = int(df.duplicated(subset=[column], keep=False).sum())
 
         results.append(
             create_result(
@@ -119,9 +113,7 @@ def validate_dataset(dataset_name: str, filename: str) -> list[dict]:
                 f"unique_{column}",
                 "FAILED" if duplicate_count else "PASSED",
                 affected_rows=duplicate_count,
-                details=(
-                    f"{duplicate_count} rows participate in duplicate keys."
-                ),
+                details=(f"{duplicate_count} rows participate in duplicate keys."),
                 recommendation=(
                     "Investigate duplicate records before loading "
                     "the dataset into the analytical layer."
@@ -138,9 +130,7 @@ def validate_dataset(dataset_name: str, filename: str) -> list[dict]:
     if dataset_name == "order_items":
         key_columns = ["order_id", "order_item_id"]
 
-        duplicate_count = int(
-            df.duplicated(subset=key_columns, keep=False).sum()
-        )
+        duplicate_count = int(df.duplicated(subset=key_columns, keep=False).sum())
 
         results.append(
             create_result(
@@ -196,9 +186,7 @@ def validate_dataset(dataset_name: str, filename: str) -> list[dict]:
                 affected_rows=negative_count,
                 details=f"Negative values: {negative_count}",
                 recommendation=(
-                    "Investigate negative financial values."
-                    if negative_count
-                    else ""
+                    "Investigate negative financial values." if negative_count else ""
                 ),
             )
         )
@@ -225,9 +213,7 @@ def validate_dataset(dataset_name: str, filename: str) -> list[dict]:
     # --------------------------------------------------
 
     if dataset_name == "reviews":
-        invalid_count = int(
-            (~df["review_score"].between(1, 5)).sum()
-        )
+        invalid_count = int((~df["review_score"].between(1, 5)).sum())
 
         results.append(
             create_result(
@@ -237,9 +223,7 @@ def validate_dataset(dataset_name: str, filename: str) -> list[dict]:
                 affected_rows=invalid_count,
                 details=f"Scores outside the 1-5 range: {invalid_count}",
                 recommendation=(
-                    "Investigate invalid review scores."
-                    if invalid_count
-                    else ""
+                    "Investigate invalid review scores." if invalid_count else ""
                 ),
             )
         )
@@ -255,9 +239,7 @@ def validate_dataset(dataset_name: str, filename: str) -> list[dict]:
         ]
 
         for column, lower, upper in coordinate_checks:
-            invalid_count = int(
-                (~df[column].between(lower, upper)).sum()
-            )
+            invalid_count = int((~df[column].between(lower, upper)).sum())
 
             results.append(
                 create_result(
@@ -266,8 +248,7 @@ def validate_dataset(dataset_name: str, filename: str) -> list[dict]:
                     "FAILED" if invalid_count else "PASSED",
                     affected_rows=invalid_count,
                     details=(
-                        f"Values outside the range "
-                        f"{lower} to {upper}: {invalid_count}"
+                        f"Values outside the range {lower} to {upper}: {invalid_count}"
                     ),
                     recommendation=(
                         "Investigate invalid geographic coordinates."
@@ -316,9 +297,7 @@ def validate_dataset(dataset_name: str, filename: str) -> list[dict]:
 
         for rule_name, earlier, later in timestamp_checks:
             invalid = (
-                df[earlier].notna()
-                & df[later].notna()
-                & (df[earlier] > df[later])
+                df[earlier].notna() & df[later].notna() & (df[earlier] > df[later])
             )
 
             invalid_count = int(invalid.sum())
@@ -329,9 +308,7 @@ def validate_dataset(dataset_name: str, filename: str) -> list[dict]:
                     rule_name,
                     "FAILED" if invalid_count else "PASSED",
                     affected_rows=invalid_count,
-                    details=(
-                        f"Timestamp sequence violations: {invalid_count}"
-                    ),
+                    details=(f"Timestamp sequence violations: {invalid_count}"),
                     recommendation=(
                         "Investigate records with inconsistent timestamps. "
                         "Do not automatically reorder timestamps."
@@ -391,9 +368,7 @@ def main() -> None:
 
     if not results_df.empty:
         summary = (
-            results_df.groupby(["status", "severity"])
-            .size()
-            .unstack(fill_value=0)
+            results_df.groupby(["status", "severity"]).size().unstack(fill_value=0)
         )
 
         print("\nValidation summary:")
@@ -401,9 +376,7 @@ def main() -> None:
 
         print("\nFailed and warning checks:")
 
-        issues = results_df[
-            results_df["status"].isin(["FAILED", "WARNING"])
-        ]
+        issues = results_df[results_df["status"].isin(["FAILED", "WARNING"])]
 
         if issues.empty:
             print("No failed or warning checks.")

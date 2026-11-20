@@ -1,11 +1,9 @@
-
 import logging
 from pathlib import Path
 
 import pandas as pd
 
 from boa.config.datasets import DATASETS, RAW_DATA_DIR
-
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 PROCESSED_DATA_DIR = PROJECT_ROOT / "data" / "processed"
@@ -65,19 +63,14 @@ def clean_dataset(dataset_name: str, filename: str) -> dict:
                 utc=True,
             )
 
-            invalid_dates += (
-                original_non_null - int(df[column].notna().sum())
-            )
+            invalid_dates += original_non_null - int(df[column].notna().sum())
 
         if dataset_name == "orders":
             # Flag approval timestamps occurring after carrier handover
             df["flag_approval_after_carrier"] = (
                 df["order_approved_at"].notna()
                 & df["order_delivered_carrier_date"].notna()
-                & (
-                    df["order_approved_at"]
-                    > df["order_delivered_carrier_date"]
-                )
+                & (df["order_approved_at"] > df["order_delivered_carrier_date"])
             )
 
             # Flag carrier handover occurring after customer delivery
@@ -92,9 +85,8 @@ def clean_dataset(dataset_name: str, filename: str) -> dict:
 
             # Flag delivered orders missing customer delivery timestamps
             df["flag_delivered_missing_timestamp"] = (
-                (df["order_status"] == "delivered")
-                & df["order_delivered_customer_date"].isna()
-            )
+                df["order_status"] == "delivered"
+            ) & df["order_delivered_customer_date"].isna()
 
     # Flag incomplete product metadata.
     if dataset_name == "products":
@@ -112,9 +104,7 @@ def clean_dataset(dataset_name: str, filename: str) -> dict:
             "product_width_cm",
         ]
 
-        df["is_product_metadata_incomplete"] = (
-            df[metadata_columns].isna().any(axis=1)
-        )
+        df["is_product_metadata_incomplete"] = df[metadata_columns].isna().any(axis=1)
 
         df["is_physical_measurement_incomplete"] = (
             df[measurement_columns].isna().any(axis=1)

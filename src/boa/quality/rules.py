@@ -1,4 +1,3 @@
-
 """
 Central registry of data quality rules.
 
@@ -31,7 +30,6 @@ DATASET_RULES = {
         unique_columns=["customer_id"],
         non_null_columns=["customer_id", "customer_unique_id"],
     ),
-
     "orders": DatasetRules(
         required_columns=[
             "order_id",
@@ -47,26 +45,24 @@ DATASET_RULES = {
             "order_purchase_timestamp",
         ],
     ),
-
     "order_items": DatasetRules(
-    required_columns=[
-        "order_id",
-        "order_item_id",
-        "product_id",
-        "seller_id",
-        "price",
-        "freight_value",
-    ],
-    unique_columns=[],
-    non_null_columns=[
-        "order_id",
-        "order_item_id",
-        "product_id",
-        "seller_id",
-    ],
-    positive_columns=["price"],
+        required_columns=[
+            "order_id",
+            "order_item_id",
+            "product_id",
+            "seller_id",
+            "price",
+            "freight_value",
+        ],
+        unique_columns=[],
+        non_null_columns=[
+            "order_id",
+            "order_item_id",
+            "product_id",
+            "seller_id",
+        ],
+        positive_columns=["price"],
     ),
-    
     "payments": DatasetRules(
         required_columns=[
             "order_id",
@@ -78,7 +74,6 @@ DATASET_RULES = {
         non_null_columns=["order_id", "payment_sequential"],
         positive_columns=["payment_value"],
     ),
-
     "reviews": DatasetRules(
         required_columns=[
             "review_id",
@@ -91,7 +86,6 @@ DATASET_RULES = {
             "review_score",
         ],
     ),
-
     "products": DatasetRules(
         required_columns=[
             "product_id",
@@ -99,7 +93,6 @@ DATASET_RULES = {
         unique_columns=["product_id"],
         non_null_columns=["product_id"],
     ),
-
     "sellers": DatasetRules(
         required_columns=[
             "seller_id",
@@ -110,7 +103,6 @@ DATASET_RULES = {
         unique_columns=["seller_id"],
         non_null_columns=["seller_id"],
     ),
-
     "geolocation": DatasetRules(
         required_columns=[
             "geolocation_zip_code_prefix",
@@ -123,7 +115,6 @@ DATASET_RULES = {
             "geolocation_lng",
         ],
     ),
-
     "category_translation": DatasetRules(
         required_columns=[
             "product_category_name",

@@ -1,4 +1,3 @@
-
 from functools import lru_cache
 
 from sqlalchemy import Engine, create_engine, text

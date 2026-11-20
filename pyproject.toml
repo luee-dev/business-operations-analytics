@@ -18,6 +18,8 @@ dependencies = [
     "pyyaml",
     "openpyxl",
     "reportlab",
+    "scipy",
+    "statsmodels",
 ]
 
 [project.optional-dependencies]

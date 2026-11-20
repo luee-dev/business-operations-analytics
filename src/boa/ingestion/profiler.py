@@ -4,7 +4,6 @@ import pandas as pd
 
 from boa.config.datasets import DATASETS, RAW_DATA_DIR
 
-
 logger = logging.getLogger(__name__)
 
 

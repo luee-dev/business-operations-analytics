@@ -17,9 +17,7 @@ def analyze_customer_segments(customers: pd.DataFrame) -> pd.DataFrame:
     missing_columns = required_columns.difference(customers.columns)
 
     if missing_columns:
-        raise ValueError(
-            f"Missing required columns: {sorted(missing_columns)}"
-        )
+        raise ValueError(f"Missing required columns: {sorted(missing_columns)}")
 
     if customers["customer_unique_id"].duplicated().any():
         raise ValueError("Expected one row per customer.")
@@ -44,17 +42,14 @@ def analyze_customer_segments(customers: pd.DataFrame) -> pd.DataFrame:
 
     total_customers = summary["customer_count"].sum()
 
-    summary["customer_share"] = (
-        summary["customer_count"] / total_customers * 100
-    )
+    summary["customer_share"] = summary["customer_count"] / total_customers * 100
 
     summary["revenue_share"] = (
-        summary["total_customer_value"]
-        / summary["total_customer_value"].sum()
-        * 100
+        summary["total_customer_value"] / summary["total_customer_value"].sum() * 100
     )
 
     return summary
+
 
 def analyze_repeat_purchase_behavior(
     customers: pd.DataFrame,
@@ -71,9 +66,7 @@ def analyze_repeat_purchase_behavior(
     missing_columns = required_columns.difference(customers.columns)
 
     if missing_columns:
-        raise ValueError(
-            f"Missing required columns: {sorted(missing_columns)}"
-        )
+        raise ValueError(f"Missing required columns: {sorted(missing_columns)}")
 
     if customers["customer_unique_id"].duplicated().any():
         raise ValueError("Expected one row per customer.")
@@ -87,16 +80,10 @@ def analyze_repeat_purchase_behavior(
     data = customers.copy()
 
     data["purchase_group"] = data["frequency"].map(
-        lambda frequency: (
-            "One-time customers"
-            if frequency == 1
-            else "Repeat customers"
-        )
+        lambda frequency: "One-time customers" if frequency == 1 else "Repeat customers"
     )
 
-    data["average_order_value"] = (
-        data["monetary"] / data["frequency"]
-    )
+    data["average_order_value"] = data["monetary"] / data["frequency"]
 
     summary = (
         data.groupby("purchase_group")
@@ -111,15 +98,11 @@ def analyze_repeat_purchase_behavior(
     )
 
     summary["customer_share"] = (
-        summary["customer_count"]
-        / summary["customer_count"].sum()
-        * 100
+        summary["customer_count"] / summary["customer_count"].sum() * 100
     )
 
     summary["revenue_share"] = (
-        summary["total_customer_value"]
-        / summary["total_customer_value"].sum()
-        * 100
+        summary["total_customer_value"] / summary["total_customer_value"].sum() * 100
     )
 
     return summary
@@ -140,9 +123,7 @@ def analyze_customer_recency(
     missing_columns = required_columns.difference(customers.columns)
 
     if missing_columns:
-        raise ValueError(
-            f"Missing required columns: {sorted(missing_columns)}"
-        )
+        raise ValueError(f"Missing required columns: {sorted(missing_columns)}")
 
     if customers["customer_unique_id"].duplicated().any():
         raise ValueError("Expected one row per customer.")
@@ -179,18 +160,15 @@ def analyze_customer_recency(
     )
 
     summary["customer_share"] = (
-        summary["customer_count"]
-        / summary["customer_count"].sum()
-        * 100
+        summary["customer_count"] / summary["customer_count"].sum() * 100
     )
 
     summary["revenue_share"] = (
-        summary["total_customer_value"]
-        / summary["total_customer_value"].sum()
-        * 100
+        summary["total_customer_value"] / summary["total_customer_value"].sum() * 100
     )
 
     return summary
+
 
 def analyze_customer_cohorts(
     activity: pd.DataFrame,
@@ -211,9 +189,7 @@ def analyze_customer_cohorts(
     missing_columns = required_columns.difference(activity.columns)
 
     if missing_columns:
-        raise ValueError(
-            f"Missing required columns: {sorted(missing_columns)}"
-        )
+        raise ValueError(f"Missing required columns: {sorted(missing_columns)}")
 
     if activity.empty:
         raise ValueError("Customer activity data cannot be empty.")
@@ -237,24 +213,18 @@ def analyze_customer_cohorts(
 
     data = data.join(first_purchase, on="customer_unique_id")
 
-    data = data.drop_duplicates(
-        subset=["customer_unique_id", "activity_month"]
-    )
+    data = data.drop_duplicates(subset=["customer_unique_id", "activity_month"])
 
     data["cohort_index"] = (
-        (data["activity_month"].dt.year - data["cohort_month"].dt.year)
-        * 12
+        (data["activity_month"].dt.year - data["cohort_month"].dt.year) * 12
         + data["activity_month"].dt.month
         - data["cohort_month"].dt.month
     )
 
-    cohort_sizes = (
-        first_purchase.value_counts().sort_index().rename("cohort_size")
-    )
+    cohort_sizes = first_purchase.value_counts().sort_index().rename("cohort_size")
 
     active_customers = (
-        data.groupby(["cohort_month", "cohort_index"])
-        ["customer_unique_id"]
+        data.groupby(["cohort_month", "cohort_index"])["customer_unique_id"]
         .nunique()
         .unstack("cohort_index")
     )
@@ -268,11 +238,9 @@ def analyze_customer_cohorts(
     )
 
     # Create every relative month and treat missing activity as zero.
-    active_customers = (
-        active_customers
-        .reindex(columns=range(max_cohort_index + 1))
-        .fillna(0)
-    )
+    active_customers = active_customers.reindex(
+        columns=range(max_cohort_index + 1)
+    ).fillna(0)
 
     retention = active_customers.div(cohort_sizes, axis=0) * 100
 
@@ -284,11 +252,9 @@ def analyze_customer_cohorts(
             - cohort_month.month
         )
 
-        retention.iloc[row_number, cohort_age + 1:] = float("nan")
+        retention.iloc[row_number, cohort_age + 1 :] = float("nan")
 
-    retention.columns = [
-        f"month_{int(month)}" for month in retention.columns
-    ]
+    retention.columns = [f"month_{int(month)}" for month in retention.columns]
 
     retention.insert(0, "cohort_size", cohort_sizes)
     retention.index.name = "cohort_month"

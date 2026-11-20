@@ -1,4 +1,3 @@
-
 """
 Payment Discrepancy Analysis
 ============================
@@ -31,7 +30,6 @@ import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
 from boa.config.database import engine
-
 
 # ============================================================
 # 1. CONFIGURATION
@@ -137,6 +135,7 @@ FROM quartiled_orders;
 # 3. DATA PREPARATION
 # ============================================================
 
+
 def load_data() -> pd.DataFrame:
     """Retrieve eligible orders from PostgreSQL."""
 
@@ -149,10 +148,9 @@ def prepare_data(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
     # Binary target variable.
-    df["discrepancy"] = (
-        df["payment_difference"].abs()
-        > DISCREPANCY_THRESHOLD
-    ).astype(int)
+    df["discrepancy"] = (df["payment_difference"].abs() > DISCREPANCY_THRESHOLD).astype(
+        int
+    )
 
     # Instalment categories.
     df["installment_group"] = pd.cut(
@@ -170,29 +168,19 @@ def prepare_data(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Continuous order-value variable.
-    df["log_order_value"] = np.log1p(
-        df["expected_order_value"]
-    )
+    df["log_order_value"] = np.log1p(df["expected_order_value"])
 
     # Treat quartiles as categorical variables.
-    df["order_value_quartile"] = (
-        df["order_value_quartile"].astype("category")
-    )
+    df["order_value_quartile"] = df["order_value_quartile"].astype("category")
 
     if df["installment_group"].isna().any():
-        raise ValueError(
-            "Some records have missing installment groups."
-        )
+        raise ValueError("Some records have missing installment groups.")
 
     if df["order_value_quartile"].isna().any():
-        raise ValueError(
-            "Some records have missing order-value quartiles."
-        )
+        raise ValueError("Some records have missing order-value quartiles.")
 
     if (df["expected_order_value"] <= 0).any():
-        raise ValueError(
-            "Expected order values must be positive."
-        )
+        raise ValueError("Expected order values must be positive.")
 
     return df
 
@@ -200,6 +188,7 @@ def prepare_data(df: pd.DataFrame) -> pd.DataFrame:
 # ============================================================
 # 4. DATASET SUMMARY
 # ============================================================
+
 
 def print_dataset_summary(df: pd.DataFrame) -> None:
     """Display basic information about the analytical dataset."""
@@ -213,39 +202,22 @@ def print_dataset_summary(df: pd.DataFrame) -> None:
 
     print(f"Eligible orders: {len(df):,}")
 
-    print(
-        f"Discrepant orders: "
-        f"{df['discrepancy'].sum():,}"
-    )
+    print(f"Discrepant orders: {df['discrepancy'].sum():,}")
 
-    print(
-        f"Matched orders: "
-        f"{(df['discrepancy'] == 0).sum():,}"
-    )
+    print(f"Matched orders: {(df['discrepancy'] == 0).sum():,}")
 
-    print(
-        f"Overall discrepancy rate: "
-        f"{df['discrepancy'].mean() * 100:.3f}%"
-    )
+    print(f"Overall discrepancy rate: {df['discrepancy'].mean() * 100:.3f}%")
 
     print("\nINSTALMENT GROUP DISTRIBUTION")
     print("-" * 65)
 
-    distribution = (
-        df.groupby(
-            "installment_group",
-            observed=False
-        )
-        .agg(
-            total_orders=("order_id", "count"),
-            discrepant_orders=("discrepancy", "sum"),
-        )
+    distribution = df.groupby("installment_group", observed=False).agg(
+        total_orders=("order_id", "count"),
+        discrepant_orders=("discrepancy", "sum"),
     )
 
     distribution["discrepancy_rate_pct"] = (
-        distribution["discrepant_orders"]
-        / distribution["total_orders"]
-        * 100
+        distribution["discrepant_orders"] / distribution["total_orders"] * 100
     )
 
     print(distribution.round(3).to_string())
@@ -255,6 +227,7 @@ def print_dataset_summary(df: pd.DataFrame) -> None:
 # 5. MODEL RESULT REPORTING
 # ============================================================
 
+
 def print_model_results(
     model,
     model_name: str,
@@ -263,13 +236,15 @@ def print_model_results(
 
     confidence_intervals = model.conf_int()
 
-    results = pd.DataFrame({
-        "coefficient": model.params,
-        "odds_ratio": np.exp(model.params),
-        "p_value": model.pvalues,
-        "ci_lower": np.exp(confidence_intervals[0]),
-        "ci_upper": np.exp(confidence_intervals[1]),
-    })
+    results = pd.DataFrame(
+        {
+            "coefficient": model.params,
+            "odds_ratio": np.exp(model.params),
+            "p_value": model.pvalues,
+            "ci_lower": np.exp(confidence_intervals[0]),
+            "ci_upper": np.exp(confidence_intervals[1]),
+        }
+    )
 
     print("\n" + "=" * 80)
     print(model_name)
@@ -288,8 +263,7 @@ def print_model_results(
     print(f"Deviance: {model.deviance:.4f}")
     print(f"Pearson chi-square: {model.pearson_chi2:.4f}")
     print(
-        f"Pearson chi-square / residual df: "
-        f"{model.pearson_chi2 / model.df_resid:.4f}"
+        f"Pearson chi-square / residual df: {model.pearson_chi2 / model.df_resid:.4f}"
     )
     print(f"Degrees of freedom: {model.df_resid:.0f}")
 
@@ -302,6 +276,7 @@ def print_model_results(
 # ============================================================
 # 6. MODEL 1: CONTINUOUS ORDER VALUE
 # ============================================================
+
 
 def fit_continuous_model(df: pd.DataFrame):
     """
@@ -334,6 +309,7 @@ def fit_continuous_model(df: pd.DataFrame):
 # 7. MODEL 2: CATEGORICAL ORDER VALUE QUARTILES
 # ============================================================
 
+
 def fit_quartile_model(df: pd.DataFrame):
     """
     Model 2:
@@ -362,8 +338,124 @@ def fit_quartile_model(df: pd.DataFrame):
 
 
 # ============================================================
-# 8. MAIN EXECUTION
+# 8. MODEL COMPARISON
 # ============================================================
+
+
+def compare_models(model_1, model_2) -> None:
+    """
+    Compare model fit and adjusted instalment effects.
+
+    Both models must be fitted on the same observations.
+    """
+
+    if model_1.nobs != model_2.nobs:
+        raise ValueError("Models must use the same number of observations.")
+
+    def calculate_diagnostics(model):
+        observations = int(model.nobs)
+        parameter_count = len(model.params)
+
+        null_deviance = model.null_deviance
+
+        deviance_explained = (
+            1 - model.deviance / null_deviance if null_deviance > 0 else np.nan
+        )
+
+        return {
+            "observations": observations,
+            "parameters": parameter_count,
+            "log_likelihood": model.llf,
+            "deviance": model.deviance,
+            "null_deviance": null_deviance,
+            "deviance_explained": deviance_explained,
+            "AIC": model.aic,
+            "BIC": (-2 * model.llf + np.log(observations) * parameter_count),
+            "pearson_dispersion": (model.pearson_chi2 / model.df_resid),
+        }
+
+    diagnostics = pd.DataFrame(
+        {
+            "Model 1": calculate_diagnostics(model_1),
+            "Model 2": calculate_diagnostics(model_2),
+        }
+    )
+
+    print("\n" + "=" * 80)
+    print("MODEL FIT COMPARISON")
+    print("=" * 80)
+
+    print(diagnostics.round(4).to_string())
+
+    # Compare adjusted instalment effects.
+    def extract_installment_effects(model):
+        confidence_intervals = model.conf_int()
+
+        results = []
+
+        for parameter in model.params.index:
+            if not parameter.startswith("C(installment_group"):
+                continue
+
+            results.append(
+                {
+                    "parameter": parameter,
+                    "odds_ratio": np.exp(model.params[parameter]),
+                    "ci_lower": np.exp(confidence_intervals.loc[parameter, 0]),
+                    "ci_upper": np.exp(confidence_intervals.loc[parameter, 1]),
+                    "p_value": model.pvalues[parameter],
+                }
+            )
+
+        return pd.DataFrame(results).set_index("parameter")
+
+    effects_1 = extract_installment_effects(model_1)
+    effects_2 = extract_installment_effects(model_2)
+
+    comparison = effects_1.join(
+        effects_2,
+        how="outer",
+        lsuffix="_model_1",
+        rsuffix="_model_2",
+    )
+
+    print("\n" + "=" * 80)
+    print("ADJUSTED INSTALMENT ODDS RATIO COMPARISON")
+    print("=" * 80)
+
+    print(comparison.round(4).to_string())
+
+    print("\nINTERPRETATION GUIDE")
+    print("-" * 80)
+    print(
+        "Odds ratios above 1 indicate higher odds of discrepancy "
+        "relative to the reference group."
+    )
+    print(
+        "Odds ratios below 1 indicate lower odds of discrepancy "
+        "relative to the reference group."
+    )
+    print(
+        "Confidence intervals containing 1 indicate that the "
+        "estimated effect is not statistically distinguishable "
+        "from the reference at the 5% level."
+    )
+    print(
+        "A lower AIC or BIC indicates a better fit-adjusted "
+        "information criterion among these candidate models."
+    )
+    print(
+        "Deviance explained is calculated as 1 minus model "
+        "deviance divided by null deviance. It is not an "
+        "ordinary least-squares R-squared."
+    )
+    print("These results describe associations, not causal effects.")
+
+
+# ============================================================
+# 9. MAIN EXECUTION
+# ============================================================
+
 
 def main():
 
@@ -377,32 +469,12 @@ def main():
 
     print_dataset_summary(df)
 
-    # First model.
+    # Fit both models and retain their results.
     model_1 = fit_continuous_model(df)
-
-    # Second model.
     model_2 = fit_quartile_model(df)
 
-    print("\n" + "=" * 80)
-    print("MODEL COMPARISON")
-    print("=" * 80)
-
-    print(
-        "Model 1 uses continuous log-transformed order value."
-    )
-
-    print(
-        "Model 2 uses categorical order-value quartiles."
-    )
-
-    print(
-        "\nCompare the instalment coefficients, confidence "
-        "intervals and model diagnostics."
-    )
-
-    print(
-        "\nNeither model establishes a causal relationship."
-    )
+    # Compare model fit and instalment effects.
+    compare_models(model_1, model_2)
 
 
 if __name__ == "__main__":

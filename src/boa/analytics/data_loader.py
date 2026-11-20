@@ -1,9 +1,7 @@
-
 import pandas as pd
 from sqlalchemy import text
 
 from boa.config.database import get_engine
-
 
 # Only allow access to known, validated analytics views.
 ANALYTICS_VIEWS = {

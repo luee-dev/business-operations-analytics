@@ -1,12 +1,9 @@
-
 import csv
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 from boa.config.database import engine
 from boa.config.datasets import DATASETS, PROCESSED_DATA_DIR
-
-from decimal import Decimal, InvalidOperation
-
 
 # Expected headers in the processed CSV files.
 SOURCE_COLUMNS = {
@@ -92,8 +89,7 @@ SOURCE_COLUMNS = {
 # Columns actually inserted into each staging table.
 # The duplicate orders flag is intentionally excluded.
 STAGING_COLUMNS = {
-    dataset: columns.copy()
-    for dataset, columns in SOURCE_COLUMNS.items()
+    dataset: columns.copy() for dataset, columns in SOURCE_COLUMNS.items()
 }
 
 INTEGER_COLUMNS = {
@@ -125,9 +121,8 @@ INTEGER_COLUMNS = {
     "category_translation": [],
 }
 
-STAGING_COLUMNS["orders"].remove(
-    "is_delivered_timestamp_missing"
-)
+STAGING_COLUMNS["orders"].remove("is_delivered_timestamp_missing")
+
 
 def normalize_integer_value(value, dataset_name, column_name):
     """Convert integer-like CSV values such as 40.0 to 40."""
@@ -139,17 +134,16 @@ def normalize_integer_value(value, dataset_name, column_name):
         number = Decimal(value.strip())
     except InvalidOperation as exc:
         raise ValueError(
-            f"Invalid integer value in {dataset_name}.{column_name}: "
-            f"{value!r}"
+            f"Invalid integer value in {dataset_name}.{column_name}: {value!r}"
         ) from exc
 
     if not number.is_finite() or number != number.to_integral_value():
         raise ValueError(
-            f"Non-integer value in {dataset_name}.{column_name}: "
-            f"{value!r}"
+            f"Non-integer value in {dataset_name}.{column_name}: {value!r}"
         )
 
     return str(int(number))
+
 
 def validate_csv_headers(
     file_path: Path,
@@ -195,14 +189,9 @@ def load_csv_to_staging(
 
     columns = STAGING_COLUMNS[dataset_name]
 
-    column_sql = ", ".join(
-        f'"{column}"' for column in columns
-    )
+    column_sql = ", ".join(f'"{column}"' for column in columns)
 
-    copy_sql = (
-        f"COPY staging.{dataset_name} ({column_sql}) "
-        "FROM STDIN"
-    )
+    copy_sql = f"COPY staging.{dataset_name} ({column_sql}) FROM STDIN"
 
     with file_path.open(
         "r",
@@ -243,9 +232,7 @@ def load_staging_data() -> list[dict]:
         file_path = PROCESSED_DATA_DIR / filename
 
         if not file_path.exists():
-            raise FileNotFoundError(
-                f"Processed dataset not found: {file_path}"
-            )
+            raise FileNotFoundError(f"Processed dataset not found: {file_path}")
 
         validate_csv_headers(
             file_path,
@@ -258,13 +245,9 @@ def load_staging_data() -> list[dict]:
         cursor = connection.cursor()
 
         try:
-            table_names = ", ".join(
-                f"staging.{name}" for name in DATASETS
-            )
+            table_names = ", ".join(f"staging.{name}" for name in DATASETS)
 
-            cursor.execute(
-                f"TRUNCATE TABLE {table_names} RESTART IDENTITY"
-            )
+            cursor.execute(f"TRUNCATE TABLE {table_names} RESTART IDENTITY")
 
             for dataset_name, filename in DATASETS.items():
                 file_path = PROCESSED_DATA_DIR / filename
@@ -277,9 +260,7 @@ def load_staging_data() -> list[dict]:
                     dataset_name,
                 )
 
-                cursor.execute(
-                    f"SELECT COUNT(*) FROM staging.{dataset_name}"
-                )
+                cursor.execute(f"SELECT COUNT(*) FROM staging.{dataset_name}")
 
                 database_count = cursor.fetchone()[0]
 
@@ -288,9 +269,7 @@ def load_staging_data() -> list[dict]:
                     "source_rows": source_count,
                     "database_rows": database_count,
                     "status": (
-                        "PASSED"
-                        if source_count == database_count
-                        else "FAILED"
+                        "PASSED" if source_count == database_count else "FAILED"
                     ),
                 }
 
@@ -323,12 +302,7 @@ def main() -> None:
 
     results = load_staging_data()
 
-    print(
-        f"{'DATASET':<22}"
-        f"{'SOURCE ROWS':>15}"
-        f"{'DATABASE ROWS':>17}"
-        f"{'STATUS':>12}"
-    )
+    print(f"{'DATASET':<22}{'SOURCE ROWS':>15}{'DATABASE ROWS':>17}{'STATUS':>12}")
     print("-" * 66)
 
     for result in results:
