@@ -1,0 +1,316 @@
+                                      Business Operations & Performance Report
+ Generated: 20 November 2026, 13:29 EAT
+
+
+
+ Executive Summary
+                                                      Metric                     Result       Metric                                Result
+
+                                                      Total orders               99,441       Delivered orders                      96,478
+
+                                                      Eligible delivery orders   96,470       Late delivery rate                    8.11%
+
+                                                      Average delivery time      12.56 days   Customer experience eligible orders   95,824
+
+
+ This report summarizes historical marketplace operations. The findings describe the observed dataset and should not be interpreted as current market performance or causal evidence.
+
+
+
+
+Business Operations & Performance Report                                                                                                                                           Page 1
+ 1. Delivery Performance
+                                                                    Metric                                  Value
+
+                                                                    Delivered orders                        96,478
+
+                                                                    Eligible orders                         96,470
+
+                                                                    Late orders                             7,826
+
+                                                                    Late delivery rate                      8.11%
+
+                                                                    On-time delivery rate                   91.89%
+
+                                                                    Average delivery duration               12.56 days
+
+                                                                    Median delivery duration                10.22 days
+
+                                                                    90th percentile delivery duration       23.10 days
+
+                                                                    Delivered orders missing timestamps     8
+
+
+
+
+ Monthly Delivery Performance
+                                           purchase_month   eligible_orders    late_orders      late_delivery_rate   rolling_3m_late_delivery_rate
+
+                                           2016-09          1                  1                100.00%              100.00%
+
+                                           2016-10          265                3                1.13%                1.50%
+
+                                           2016-11          0                  0                N/A                  1.50%
+
+                                           2016-12          1                  0                0.00%                1.13%
+
+                                           2017-01          750                23               3.07%                3.06%
+
+                                           2017-02          1,653              53               3.21%                3.16%
+
+                                           2017-03          2,546              142              5.58%                4.40%
+
+
+
+
+Business Operations & Performance Report                                                                                                             Page 2
+                                           purchase_month   eligible_orders   late_orders   late_delivery_rate   rolling_3m_late_delivery_rate
+
+                                           2017-04          2,303             181           7.86%                5.78%
+
+                                           2017-05          3,545             128           3.61%                5.37%
+
+                                           2017-06          3,135             121           3.86%                4.79%
+
+                                           2017-07          3,872             133           3.43%                3.62%
+
+                                           2017-08          4,193             139           3.32%                3.51%
+
+                                           2017-09          4,150             216           5.20%                4.00%
+
+                                           2017-10          4,478             237           5.29%                4.62%
+
+                                           2017-11          7,288             1,043         14.31%               9.40%
+
+                                           2017-12          5,513             462           8.38%                10.08%
+
+                                           2018-01          7,069             464           6.56%                9.91%
+
+                                           2018-02          6,555             1,048         15.99%               10.32%
+
+                                           2018-03          7,003             1,496         21.36%               14.58%
+
+                                           2018-04          6,798             361           5.31%                14.27%
+
+                                           2018-05          6,749             556           8.24%                11.74%
+
+                                           2018-06          6,096             83            1.36%                5.09%
+
+                                           2018-07          6,156             276           4.48%                4.82%
+
+                                           2018-08          6,351             660           10.39%               5.48%
+
+                                           2018-09          0                 0             N/A                  7.48%
+
+                                           2018-10          0                 0             N/A                  10.39%
+
+
+
+
+Business Operations & Performance Report                                                                                                         Page 3
+ 2. Customer Analytics
+
+ Customer Segments
+                                           customer_segment                 customer_count   total_orders   total_customer_value   avg_customer_value
+
+                                           Inactive / Hibernating           36,392           36,392         R$ 5,887,396.64        R$ 161.78
+
+                                           Potential High Value             14,380           14,380         R$ 3,169,074.97        R$ 220.38
+
+                                           Recent High-Value Customers      6,926            6,926          R$ 3,113,806.20        R$ 449.58
+
+                                           Regular Customers                32,859           32,859         R$ 2,385,308.48        R$ 72.59
+
+                                           Champions                        983              2,145          R$ 366,509.87          R$ 372.85
+
+                                           At Risk                          997              2,075          R$ 294,507.02          R$ 295.39
+
+                                           Loyal Customers                  821              1,701          R$ 203,170.57          R$ 247.47
+
+
+
+
+ Repeat Purchase Behaviour
+                                               purchase_group           customer_count   delivered_orders   total_customer_value   avg_order_value
+
+                                               One-time customers       90,557           90,557             R$ 14,555,586.29       R$ 160.73
+
+                                               Repeat customers         2,801            5,921              R$ 864,187.46          R$ 145.85
+
+
+
+
+ Customer Recency
+                                                          recency_group     customer_count   total_customer_value    median_recency_days
+
+                                                          0–30 days         6,893            R$ 1,112,050.91         19
+
+                                                          31–90 days        11,627           R$ 2,011,961.48         62
+
+                                                          91–180 days       19,706           R$ 3,344,787.83         135
+
+
+
+
+Business Operations & Performance Report                                                                                                                Page 4
+                                                        recency_group       customer_count      total_customer_value        median_recency_days
+
+                                                        181–365 days        34,452              R$ 5,611,188.99             266
+
+                                                        Over 365 days       20,680              R$ 3,339,784.54             456
+
+
+
+ 3. Product & Category Performance
+                                                                               Category concentration metric       Value
+
+                                                                               Top 5 category revenue share        39.83%
+
+                                                                               Top 10 category revenue share       62.43%
+
+                                                                               Category HHI                        489.48
+
+
+
+
+ Leading Categories
+                                           product_category         total_products     delivered_item_lines       delivered_product_value   revenue_share
+
+                                           health_beauty            2,444              9,465                      R$ 1,233,131.72           9.33%
+
+                                           watches_gifts            1,329              5,859                      R$ 1,166,176.98           8.82%
+
+                                           bed_bath_table           3,029              10,953                     R$ 1,023,434.76           7.74%
+
+                                           sports_leisure           2,867              8,431                      R$ 954,852.55             7.22%
+
+                                           computers_accessories    1,639              7,644                      R$ 888,724.61             6.72%
+
+                                           furniture_decor          2,657              8,160                      R$ 711,927.69             5.38%
+
+                                           housewares               2,335              6,795                      R$ 615,628.69             4.66%
+
+                                           cool_stuff               789                3,718                      R$ 610,204.10             4.62%
+
+                                           auto                     1,900              4,140                      R$ 578,966.65             4.38%
+
+                                           toys                     1,411              4,030                      R$ 471,286.48             3.56%
+
+
+
+
+Business Operations & Performance Report                                                                                                                    Page 5
+                                                                         Product concentration metric        Value
+
+                                                                         Products with delivered sales       32,216
+
+                                                                         Products without delivered sales    735
+
+                                                                         Top 10 product revenue share        3.35%
+
+                                                                         Top 50 product revenue share        9.38%
+
+
+
+ 4. Seller Performance
+                                                                          Seller concentration metric       Value
+
+                                                                          Total sellers                     3,095
+
+                                                                          Sellers with delivered sales      2,970
+
+                                                                          Top 10 seller revenue share       13.27%
+
+                                                                          Top 20 seller revenue share       21.28%
+
+
+
+
+ Elevated Operational Risk Screening
+                           seller_id                          delivery_estimate_eligible_orders     late_delivery_rate   excess_late_associations   operational_risk
+
+                           06a2c3af7b3aee5d69171b0e14f0ee87   389                                   0.23%                58.92                      Elevated
+
+                           4a3ca9315b744ce9f8e9374361493884   1,772                                 0.11%                53.43                      Elevated
+
+                           4869f7a5dfa277a7dca6462dcf3b52b2   1,124                                 0.12%                40.20                      Elevated
+
+                           1f50f920176fa81dab994f9023523100   1,399                                 0.11%                36.23                      Elevated
+
+                           8160255418d5aaa7dbdc9f4c64ebda44   380                                   0.17%                32.64                      Elevated
+
+                           88460e8ebdecbfecb5f9601833981930   246                                   0.20%                28.35                      Elevated
+
+
+
+
+Business Operations & Performance Report                                                                                                                               Page 6
+                           seller_id                               delivery_estimate_eligible_orders    late_delivery_rate    excess_late_associations     operational_risk
+
+                           ea8482cd71df3c1969d7b9473ff13abc        1,132                                0.10%                 27.56                        Elevated
+
+                           7d13fca15225358621be4086e1eb0964        558                                  0.12%                 23.42                        Elevated
+
+                           e5a3438891c0bfdb9394643f95273d8e        216                                  0.19%                 22.74                        Elevated
+
+                           8b321bb669392f5163d04c59e235e066        930                                  0.10%                 22.70                        Elevated
+
+                           7c67e1448b00f6e969d365cea6b010ab        973                                  0.10%                 20.26                        Elevated
+
+                           1025f0e2d44d7041d6cf58b6550e0bfa        910                                  0.10%                 19.30                        Elevated
+
+                           855668e0971d4dfd7bef1b6a4133b41b        300                                  0.14%                 18.03                        Elevated
+
+                           a49928bcdf77c55c6d6e05e09a9b4ca5        96                                   0.26%                 17.33                        Elevated
+
+                           f7ba60f8c3f99e7ee4042fdef03b70c4        218                                  0.16%                 16.58                        Elevated
+
+ The screening identified 86 elevated-risk sellers among 627 sellers meeting the eligibility threshold. This is a statistical screening result, not proof of seller fault or confirmed operational
+ failure. Multiple testing may increase false-positive findings.
+
+
+
+
+Business Operations & Performance Report                                                                                                                                                        Page 7
+ 5. Customer Experience
+                                                                Metric                          Late delivery    On-time delivery
+
+                                                                Eligible orders                 7,661            88,163
+
+                                                                Average review score            2.57             4.29
+
+                                                                Median review score             2.00             5.00
+
+                                                                Negative review order rate      54.12%           9.26%
+
+                                                                Average delivery duration       31.38 days       10.88 days
+
+
+
+
+ Observed Differences
+                                                                 Measure                                     Late minus on-time
+
+                                                                 Average review score difference             -1.73
+
+                                                                 Negative review order rate difference       44.86%
+
+
+
+                                                                    Statistical test                                  p-value
+
+                                                                    welch t test review score                         0.000000
+
+                                                                    two proportion z test negative review orders      0.000000
+
+                                                                    mann whitney u review score                       0.000000
+
+
+ The observed differences indicate an association between delivery timeliness and customer review outcomes. They do not establish that delivery delays alone caused lower review scores.
+ Very small p-values should be interpreted alongside effect sizes and the large sample size.
+
+
+
+
+Business Operations & Performance Report                                                                                                                                           Page 8
+

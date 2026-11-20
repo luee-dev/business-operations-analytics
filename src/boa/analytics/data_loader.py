@@ -12,6 +12,7 @@ ANALYTICS_VIEWS = {
     "vw_category_performance",
     "vw_seller_performance",
     "vw_delivery_review_analysis",
+    "vw_order_review_performance",
     "vw_category_review_analysis",
     "vw_payment_delivery_analysis",
     "vw_customer_segment_category_analysis",
